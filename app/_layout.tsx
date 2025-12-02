@@ -1,18 +1,27 @@
-import { Tabs } from "expo-router";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaBlur } from "../src/components/ui/SafeAreaBlur";
 
-export default function TabLayout() {
+export default function RootLayout() {
   return (
-    <Tabs>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons size={28} name="home-filled" color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    <SafeAreaProvider>
+      <StatusBar style="dark" />
+      <SafeAreaBlur />
+      <Stack>
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="recipe/[id]"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </SafeAreaProvider>
   );
 }
