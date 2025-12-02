@@ -58,6 +58,11 @@ export default function RecipeDetailScreen() {
     extrapolate: 'clamp',
   });
 
+  const handleAuthorPress = () => {
+    // Navigate to user profile - using the author's ID or username
+    router.push(`/(tabs)/profile`);
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StickyHeader scrollY={scrollY} />
@@ -72,7 +77,7 @@ export default function RecipeDetailScreen() {
         scrollEventThrottle={16}
       >
         {/* Hero Image with Parallax */}
-        <View style={[styles.heroImageContainer, { marginTop: HEADER_HEIGHT - 20 }]}>
+        <View style={styles.heroImageContainer}>
           <Animated.Image 
             source={{ uri: recipe.imageUrl }} 
             style={[
@@ -112,16 +117,13 @@ export default function RecipeDetailScreen() {
         </View>
 
         {/* Content */}
-        <View style={[styles.content, { marginTop: -30 }]}>
+        <View style={styles.content}>
           {/* Title and Author */}
           <View style={styles.titleSection}>
             <Text style={styles.title}>{recipe.title}</Text>
             <TouchableOpacity 
               style={styles.authorCard}
-              onPress={() => {
-                // TODO: Navigate to user profile
-                console.log('Navigate to user profile:', recipe.author.username);
-              }}
+              onPress={handleAuthorPress}
               activeOpacity={0.7}
             >
               <View style={styles.authorInfo}>
@@ -331,6 +333,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     backgroundColor: '#000',
+    marginTop: HEADER_HEIGHT,
   },
   heroImage: {
     width: width,
@@ -342,7 +345,11 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    marginTop: -30,
+    paddingTop: 24,
+    backgroundColor: colors.light.background,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginTop: -24,
   },
   titleSection: {
     marginBottom: 16,
@@ -509,15 +516,15 @@ const styles = StyleSheet.create({
   macrosGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   macroCard: {
-    flex: 1,
-    minWidth: '45%',
+    width: '48%',
     backgroundColor: 'rgba(63, 195, 128, 0.1)',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
+    marginBottom: 12,
   },
   macroValue: {
     fontSize: 24,
