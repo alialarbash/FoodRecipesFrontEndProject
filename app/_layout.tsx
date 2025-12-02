@@ -1,18 +1,20 @@
-import { Tabs } from "expo-router";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Stack } from "expo-router";
 
-export default function TabLayout() {
+export default function RootLayout() {
   return (
-    <Tabs>
-      <Tabs.Screen
-        name="index"
+    <Stack>
+      <Stack.Screen
+        name="(tabs)"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons size={28} name="home-filled" color={color} />
-          ),
+          headerShown: false,
         }}
       />
-    </Tabs>
+      <Stack.Screen
+        name="recipe/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
   );
 }
