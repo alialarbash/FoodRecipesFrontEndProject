@@ -1,21 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, Animated, Image, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ALL_RECIPES, CURRENT_USER } from '../../src/data/mock';
 import { colors } from '../../src/theme/colors';
+import { StickyHeader } from '../../src/components/ui/StickyHeader';
+
+const HEADER_HEIGHT = 90;
 
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'myLiqmas' | 'saved'>('myLiqmas');
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView 
+      <StickyHeader scrollY={scrollY} />
+      <Animated.ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
         <View style={styles.profileHeader}>
           <Image 
@@ -85,8 +95,8 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           ))}
         </View>
-        <View style={{ height: 80 }} />
-      </ScrollView>
+        <View style={{ height: Platform.OS === 'ios' ? 80 : 60 }} />
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }
@@ -101,6 +111,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingTop: HEADER_HEIGHT + 20,
     paddingBottom: 100,
   },
   profileHeader: {

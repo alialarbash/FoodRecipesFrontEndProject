@@ -58,11 +58,11 @@ export const BentoBox: React.FC<BentoBoxProps> = ({
             {size !== 'small' && (
               <View style={styles.authorContainer}>
                 <Image 
-                  source={{ uri: recipe.author.profilePicture }} 
+                  source={{ uri: recipe.author.avatarUrl }} 
                   style={styles.avatar}
                 />
                 <Text style={styles.authorName} numberOfLines={1}>
-                  {recipe.author.displayName}
+                  {recipe.author.username}
                 </Text>
               </View>
             )}

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Animated, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -7,6 +7,10 @@ import { getRecipeById } from '../../src/data/mock';
 import { colors } from '../../src/theme/colors';
 import { GlassView } from '../../src/components/glass/GlassView';
 import { StarRating } from '../../src/components/ui/StarRating';
+import { StickyHeader } from '../../src/components/ui/StickyHeader';
+import { CustomTabBar } from '../../src/components/ui/CustomTabBar';
+
+const HEADER_HEIGHT = 90;
 
 const { width } = Dimensions.get('window');
 const HERO_HEIGHT = 350;
@@ -56,6 +60,7 @@ export default function RecipeDetailScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <StickyHeader scrollY={scrollY} />
       <Animated.ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -67,7 +72,7 @@ export default function RecipeDetailScreen() {
         scrollEventThrottle={16}
       >
         {/* Hero Image with Parallax */}
-        <View style={styles.heroImageContainer}>
+        <View style={[styles.heroImageContainer, { marginTop: HEADER_HEIGHT - 20 }]}>
           <Animated.Image 
             source={{ uri: recipe.imageUrl }} 
             style={[
@@ -263,6 +268,7 @@ export default function RecipeDetailScreen() {
           <View style={{ height: 100 }} />
         </View>
       </Animated.ScrollView>
+      <CustomTabBar />
     </SafeAreaView>
   );
 }
@@ -276,7 +282,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: 120,
   },
   header: {
     position: 'absolute',

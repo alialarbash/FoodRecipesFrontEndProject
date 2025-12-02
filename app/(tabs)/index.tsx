@@ -1,17 +1,21 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BentoGrid } from '../../src/components/ui/BentoGrid';
 import { CategoryBox } from '../../src/components/ui/CategoryBox';
-import { ALL_RECIPES, CURRENT_USER, getCategoryFeeds } from '../../src/data/mock';
+import { StickyHeader } from '../../src/components/ui/StickyHeader';
+import { ALL_RECIPES, getCategoryFeeds } from '../../src/data/mock';
 import { colors } from '../../src/theme/colors';
 import { Recipe, Category } from '../../src/types';
+
+const HEADER_HEIGHT = 90;
 
 export default function HomeScreen() {
   const router = useRouter();
   const categoryFeeds = getCategoryFeeds();
   const categories: Category[] = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert', 'Drinks'];
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const handleRecipePress = (recipe: Recipe) => {
     router.push(`/recipe/${recipe.id}`);
@@ -23,21 +27,17 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView 
+      <StickyHeader scrollY={scrollY} />
+      <Animated.ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Good Morning,</Text>
-            <Text style={styles.subtitle}>Ready for your first Liqma?</Text>
-          </View>
-          <Image 
-            source={{ uri: CURRENT_USER.avatarUrl }} 
-            style={styles.avatarSmall}
-          />
-        </View>
 
         <View style={styles.section}>
           <View style={styles.sectionTitle}>
@@ -70,8 +70,8 @@ export default function HomeScreen() {
             })}
           </View>
         </View>
-        <View style={{ height: 80 }} />
-      </ScrollView>
+        <View style={{ height: Platform.OS === 'ios' ? 80 : 60 }} />
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }
@@ -86,38 +86,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingTop: HEADER_HEIGHT + 20,
     paddingBottom: 100,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
-    paddingTop: 20,
-  },
-  greeting: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: colors.light.text,
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 16,
-    fontWeight: '400',
-    color: colors.light.textSecondary,
-    marginTop: 4,
-  },
-  avatarSmall: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 3,
   },
   section: {
     marginBottom: 32,

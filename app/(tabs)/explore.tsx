@@ -1,13 +1,16 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useMemo, useRef } from 'react';
+import { View, Text, StyleSheet, Animated, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { RecipeCard } from '../../src/components/ui/RecipeCard';
 import { FilterModal } from '../../src/components/ui/FilterModal';
+import { StickyHeader } from '../../src/components/ui/StickyHeader';
 import { ALL_RECIPES } from '../../src/data/mock';
 import { colors } from '../../src/theme/colors';
 import { Recipe } from '../../src/types';
+
+const HEADER_HEIGHT = 90;
 
 interface FilterCriteria {
   protein: number;
@@ -16,6 +19,7 @@ interface FilterCriteria {
 
 export default function ExploreScreen() {
   const router = useRouter();
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [showFilter, setShowFilter] = useState(false);
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,7 +48,8 @@ export default function ExploreScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.stickyHeader}>
+      <StickyHeader scrollY={scrollY} />
+      <View style={styles.searchHeader}>
         <View style={styles.searchBar}>
           <MaterialIcons name="search" size={18} color="#666" />
           <TextInput
@@ -63,10 +68,15 @@ export default function ExploreScreen() {
         </View>
       </View>
 
-      <ScrollView 
+      <Animated.ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
         <View style={styles.feedList}>
           {filteredRecipes.map(r => (
@@ -78,8 +88,8 @@ export default function ExploreScreen() {
             />
           ))}
         </View>
-        <View style={{ height: 80 }} />
-      </ScrollView>
+        <View style={{ height: Platform.OS === 'ios' ? 80 : 60 }} />
+      </Animated.ScrollView>
 
       <FilterModal
         visible={showFilter}
@@ -98,13 +108,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.light.background,
   },
-  stickyHeader: {
+  searchHeader: {
+    position: 'absolute',
+    top: HEADER_HEIGHT,
+    left: 0,
+    right: 0,
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
+    paddingTop: 12,
+    paddingBottom: 12,
     backgroundColor: colors.light.background,
     borderBottomWidth: 1,
     borderBottomColor: colors.light.border,
+    zIndex: 999,
   },
   searchBar: {
     backgroundColor: '#fff',
@@ -133,6 +148,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingTop: HEADER_HEIGHT + 80, // Account for StickyHeader + search bar
   },
   feedList: {
     gap: 20,
