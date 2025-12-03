@@ -1,14 +1,22 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, TextInput, TouchableOpacity, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-import { RecipeCard } from '../../src/components/ui/RecipeCard';
-import { FilterModal } from '../../src/components/ui/FilterModal';
-import { StickyHeader } from '../../src/components/ui/StickyHeader';
-import { ALL_RECIPES } from '../../src/data/mock';
-import { colors } from '../../src/theme/colors';
-import { Recipe } from '../../src/types';
+import React, { useState, useMemo, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  TextInput,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
+import { RecipeCard } from "../../../src/components/ui/RecipeCard";
+import { FilterModal } from "../../../src/components/ui/FilterModal";
+import { StickyHeader } from "../../../src/components/ui/StickyHeader";
+import { ALL_RECIPES } from "../../../src/data/mock";
+import { colors } from "../../../src/theme/colors";
+import { Recipe } from "../../../src/types";
 
 const HEADER_HEIGHT = 90;
 
@@ -21,25 +29,30 @@ export default function ExploreScreen() {
   const router = useRouter();
   const scrollY = useRef(new Animated.Value(0)).current;
   const [showFilter, setShowFilter] = useState(false);
-  const [filterCriteria, setFilterCriteria] = useState<FilterCriteria | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCriteria, setFilterCriteria] = useState<FilterCriteria | null>(
+    null
+  );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredRecipes = useMemo(() => {
     let recipes = ALL_RECIPES;
 
     if (filterCriteria) {
-      recipes = recipes.filter(r => r.macros.protein >= filterCriteria.protein);
+      recipes = recipes.filter(
+        (r) => r.macros.protein >= filterCriteria.protein
+      );
       if (filterCriteria.dairyFree) {
-        recipes = recipes.filter(r => r.tags.includes('Dairy-Free'));
+        recipes = recipes.filter((r) => r.tags.includes("Dairy-Free"));
       }
     }
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      recipes = recipes.filter(r => 
-        r.title.toLowerCase().includes(query) ||
-        r.category.toLowerCase().includes(query) ||
-        r.tags.some(t => t.toLowerCase().includes(query))
+      recipes = recipes.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query) ||
+          r.category.toLowerCase().includes(query) ||
+          r.tags.some((t) => t.toLowerCase().includes(query))
       );
     }
 
@@ -47,7 +60,7 @@ export default function ExploreScreen() {
   }, [filterCriteria, searchQuery]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StickyHeader scrollY={scrollY} />
       <View style={styles.searchHeader}>
         <View style={styles.searchBar}>
@@ -59,7 +72,7 @@ export default function ExploreScreen() {
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.filterIconBtn}
             onPress={() => setShowFilter(true)}
           >
@@ -68,7 +81,7 @@ export default function ExploreScreen() {
         </View>
       </View>
 
-      <Animated.ScrollView 
+      <Animated.ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -79,16 +92,16 @@ export default function ExploreScreen() {
         scrollEventThrottle={16}
       >
         <View style={styles.feedList}>
-          {filteredRecipes.map(r => (
-            <RecipeCard 
-              key={r.id} 
-              recipe={r} 
+          {filteredRecipes.map((r) => (
+            <RecipeCard
+              key={r.id}
+              recipe={r}
               layout="feed"
               onPress={() => router.push(`/recipe/${r.id}`)}
             />
           ))}
         </View>
-        <View style={{ height: Platform.OS === 'ios' ? 80 : 60 }} />
+        <View style={{ height: Platform.OS === "ios" ? 80 : 60 }} />
       </Animated.ScrollView>
 
       <FilterModal
@@ -109,7 +122,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.background,
   },
   searchHeader: {
-    position: 'absolute',
+    position: "absolute",
     top: HEADER_HEIGHT,
     left: 0,
     right: 0,
@@ -122,14 +135,14 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   searchBar: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 12,
